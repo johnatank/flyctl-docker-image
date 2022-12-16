@@ -24,7 +24,7 @@ steps:
     arguments:
       image: mprokopi/flyctl:${{FLYCTL_VERSION}}
       commands:
-        - flyctl version
+        - flyctl version      
         
   cloneRepo:
     title: "Cloning repository"
@@ -36,7 +36,7 @@ steps:
     when:
       condition:
         all:
-          checkIfDockerImageExistsFailure: "'${{steps.checkIfDockerImageExists.result}}' == 'error'"
+          checkIfDockerImageExistsFailure: steps.checkIfDockerImageExists.result == 'failure'
           
   dockerImageBuild:
     type: build
@@ -53,4 +53,4 @@ steps:
     when:
       condition:
         all:
-          checkIfDockerImageExistsFailure: "'${{steps.checkIfDockerImageExists.result}}' == 'error'"
+          checkIfDockerImageExistsFailure: steps.checkIfDockerImageExists.result == 'failure'
