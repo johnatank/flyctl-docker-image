@@ -1,5 +1,5 @@
 FROM alpine:3.17 as builder
-RUN apk add curl jq
+RUN apk add curl jq --no-cache
 COPY ./download-latest-flyctl.sh /download-latest-flyctl.sh
 RUN /download-latest-flyctl.sh
 
