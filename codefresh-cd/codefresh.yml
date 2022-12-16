@@ -1,0 +1,56 @@
+
+version: "1.0"
+stages:
+  - precheck
+  - clone
+  - build
+steps:
+  checkFlyctlLatestVersion:
+    title: Check latest flyctl version
+    type: freestyle
+    stage: precheck
+    arguments:
+      image: alpine:latest
+      commands:
+        - apk add jq curl
+        - export FLYCTL_VERSION=$(curl
+          https://api.github.com/repos/superfly/flyctl/releases/latest | jq -r .name)
+        - cf_export FLYCTL_VERSION
+        
+  checkIfDockerImageExists:
+    title: Check if my docker repo has image
+    stage: precheck
+    fail_fast: false
+    arguments:
+      image: mprokopi/flyctl:${{FLYCTL_VERSION}}
+      commands:
+        - flyctl version
+        
+  cloneRepo:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "johnatank/flyctl-docker-image"
+    revision: ${{CF_BRANCH}}
+    git: "github"
+    stage: "clone"
+    when:
+      condition:
+        all:
+          checkIfDockerImageExistsFailure: "'${{steps.checkIfDockerImageExists.result}}' == 'error'"
+          
+  dockerImageBuild:
+    type: build
+    title: Building docker image
+    stage: build
+    arguments:
+      working_directory: '${{cloneRepo}}'
+      dockerfile: Dockerfile
+      image_name: mprokopi/flyctl
+      tag: '${{FLYCTL_VERSION}}'
+      tags:
+        - latest
+      registry: my-docker-hub
+    when:
+      condition:
+        all:
+          checkIfDockerImageExistsFailure: "'${{steps.checkIfDockerImageExists.result}}' == 'error'"
