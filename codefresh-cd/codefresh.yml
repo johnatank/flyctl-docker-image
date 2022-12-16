@@ -30,7 +30,7 @@ steps:
     title: "Cloning repository"
     type: "git-clone"
     repo: "johnatank/flyctl-docker-image"
-    revision: ${{CF_BRANCH}}
+    revision: main
     git: "github"
     stage: "clone"
     when:
