@@ -1,8 +1,6 @@
-FROM alpine:3.17 as builder
-RUN apk add curl jq --no-cache
-COPY ./download-latest-flyctl.sh /download-latest-flyctl.sh
-RUN /download-latest-flyctl.sh
+ARG FLYCTL_VERSION
+FROM flyio/flyctl:${FLYCTL_VERSION} as builder
 
 FROM alpine:3.17 as final
-COPY --from=builder /usr/sbin/flyctl /usr/sbin/flyctl
+COPY --from=builder /flyctl /usr/sbin/flyctl
 ENTRYPOINT ["flyctl"]

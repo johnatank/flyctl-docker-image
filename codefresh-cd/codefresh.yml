@@ -43,6 +43,8 @@ steps:
     title: Building docker image
     stage: build
     arguments:
+      build_arguments:
+      - FLYCTL_VERSION=${{FLYCTL_VERSION}}
       working_directory: '${{cloneRepo}}'
       dockerfile: Dockerfile
       image_name: mprokopi/flyctl
