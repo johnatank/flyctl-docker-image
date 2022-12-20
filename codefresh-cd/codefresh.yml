@@ -1,9 +1,9 @@
-
 version: "1.0"
 stages:
   - precheck
   - clone
   - build
+  - notify
 steps:
   checkFlyctlLatestVersion:
     title: Check latest flyctl version
@@ -16,7 +16,7 @@ steps:
         - export FLYCTL_VERSION=$(curl
           https://api.github.com/repos/superfly/flyctl/releases/latest | jq -r .name)
         - cf_export FLYCTL_VERSION
-        
+
   checkIfDockerImageExists:
     title: Check if my docker repo has image
     stage: precheck
@@ -24,8 +24,19 @@ steps:
     arguments:
       image: mprokopi/flyctl:${{FLYCTL_VERSION}}
       commands:
-        - flyctl version      
-        
+        - flyctl version     
+    hooks:
+      on_success:
+        exec:
+          image: docker.io/mprokopi/shoutrrr:latest
+          environment:
+            - TITLE=Codefresh CD - ${{CF_PIPELINE_NAME}}
+          commands:
+            - |-
+              shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
+              "✅ Новий образ flyctl не потрібен."
+          
+
   cloneRepo:
     title: "Cloning repository"
     type: "git-clone"
@@ -37,7 +48,7 @@ steps:
       condition:
         all:
           checkIfDockerImageExistsFailure: steps.checkIfDockerImageExists.result == 'failure'
-          
+
   dockerImageBuild:
     type: build
     title: Building docker image
@@ -56,3 +67,32 @@ steps:
       condition:
         all:
           checkIfDockerImageExistsFailure: steps.checkIfDockerImageExists.result == 'failure'
+    hooks:
+      on_fail:
+        exec:
+          image: docker.io/mprokopi/shoutrrr:latest
+          environment:
+            - TITLE=Codefresh CD - ${{CF_PIPELINE_NAME}}
+          commands:
+            - |-
+              shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
+              "❗️Упс. Сталася помилка при збірці образу flyctl. 
+              Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>"
+
+  notifyOnSuccess:
+    title: Notify on success of pipeline
+    type: freestyle
+    stage: notify
+    arguments:
+      image: docker.io/mprokopi/shoutrrr:latest
+      environment:
+        - TITLE=Codefresh CD - ${{CF_PIPELINE_NAME}}
+      commands:
+        - |-
+          shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
+          "✅ Збірка образу flyctl завершена.  
+          Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>"
+    when:
+      condition:
+        all:
+          dockerImageBuildStatus: steps.dockerImageBuild.result == 'success'
