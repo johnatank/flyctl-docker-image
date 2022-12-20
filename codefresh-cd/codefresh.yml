@@ -34,7 +34,7 @@ steps:
           commands:
             - |-
               shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
-              "✅ Новий образ flyctl не потрібен."
+              "✅ Новий образ <b>flyctl</b> не потрібен."
           
 
   cloneRepo:
@@ -76,8 +76,8 @@ steps:
           commands:
             - |-
               shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
-              "❗️Упс. Сталася помилка при збірці образу flyctl. 
-              Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>"
+              "❗️Упс. Сталася помилка при збірці образу <b>flyctl</b>. 
+              Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>."
 
   notifyOnSuccess:
     title: Notify on success of pipeline
@@ -90,8 +90,8 @@ steps:
       commands:
         - |-
           shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
-          "✅ Збірка образу flyctl завершена.  
-          Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>"
+          "✅ Збірка образу <b>flyctl</b> завершена.  
+          Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>."
     when:
       condition:
         all:
