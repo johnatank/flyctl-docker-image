@@ -33,7 +33,7 @@ steps:
             - TITLE=Codefresh CD - ${{CF_PIPELINE_NAME}}
           commands:
             - |-
-              shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
+              shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&notification=no&preview=No&ParseMode=HTML&Title=$TITLE" --message \
               "✅ Новий образ <b>flyctl</b> не потрібен."
           
 
@@ -75,7 +75,7 @@ steps:
             - TITLE=Codefresh CD - ${{CF_PIPELINE_NAME}}
           commands:
             - |-
-              shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
+              shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&notification=no&preview=No&ParseMode=HTML&Title=$TITLE" --message \
               "❗️Упс. Сталася помилка при збірці образу <b>flyctl</b>. 
               Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>."
 
@@ -89,7 +89,7 @@ steps:
         - TITLE=Codefresh CD - ${{CF_PIPELINE_NAME}}
       commands:
         - |-
-          shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&preview=No&ParseMode=HTML&Title=$TITLE" --message \
+          shoutrrr send --url "telegram://$TG_NOTIFICATION_TOKEN@telegram?chats=$TG_CHAT_ID&notification=no&preview=No&ParseMode=HTML&Title=$TITLE" --message \
           "✅ Збірка образу <b>flyctl</b> завершена.  
           Переглянути статус збірки можна за <a href=\"${{CF_BUILD_URL}}\">посиланням</a>."
     when:
